@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>色見本帖</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF8F3;
+    --bg-soft: #F1EDE3;
+    --card: #FFFFFF;
+    --ink: #2B2820;
+    --ink-soft: #6B6656;
+    --line: #E1DBCB;
+    --line-strong: #C9C0A8;
+    --accent: #766038;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #EDE4CD;
+    --danger: #9C5342;
+    --shadow: 0 1px 2px rgba(43, 40, 32, 0.06), 0 6px 18px rgba(43, 40, 32, 0.05);
+    --radius: 10px;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #1B1A15;
+      --bg-soft: #232019;
+      --card: #262319;
+      --ink: #ECE7D9;
+      --ink-soft: #A79E88;
+      --line: #3A3527;
+      --line-strong: #4C4530;
+      --accent: #D8BE86;
+      --accent-ink: #201C10;
+      --accent-soft: #33291A;
+      --danger: #D98A78;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 22px rgba(0,0,0,0.28);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #1B1A15;
+    --bg-soft: #232019;
+    --card: #262319;
+    --ink: #ECE7D9;
+    --ink-soft: #A79E88;
+    --line: #3A3527;
+    --line-strong: #4C4530;
+    --accent: #D8BE86;
+    --accent-ink: #201C10;
+    --accent-soft: #33291A;
+    --danger: #D98A78;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 22px rgba(0,0,0,0.28);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Zen Kaku Gothic New", -apple-system, "Hiragino Sans", sans-serif;
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    padding-bottom: 64px;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 18px; }
+
+  header.top {
+    padding: 40px 18px 26px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--bg-soft), var(--bg) 140%);
+  }
+  header.top .wrap { display: flex; flex-direction: column; gap: 6px; }
+  h1 {
+    font-family: "Shippori Mincho", serif;
+    font-weight: 700;
+    font-size: 28px;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+  header.top p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  section { margin-top: 34px; }
+  h2 {
+    font-family: "Shippori Mincho", serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin: 0 0 14px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 20px;
+  }
+
+  /* ---- intake ---- */
+  .drop-zone {
+    border: 1.5px dashed var(--line-strong);
+    border-radius: var(--radius);
+    padding: 34px 18px;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease;
+    background: var(--bg-soft);
+  }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--accent); background: var(--accent-soft); }
+  .drop-zone .dz-icon { font-size: 26px; display: block; margin-bottom: 8px; }
+  .drop-zone .dz-title { font-size: 15px; font-weight: 500; }
+  .drop-zone .dz-sub { font-size: 12.5px; color: var(--ink-soft); margin-top: 4px; }
+  input[type="file"] { display: none; }
+
+  .preview { margin-top: 20px; display: none; }
+  .preview.active { display: block; }
+  .preview-top { display: flex; gap: 16px; align-items: flex-start; flex-wrap: wrap; }
+  .preview-thumb {
+    width: 108px; height: 108px; border-radius: 8px; object-fit: cover;
+    border: 1px solid var(--line); flex-shrink: 0;
+    background: var(--bg-soft);
+  }
+  .preview-controls { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 10px; }
+  .k-select-row { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-soft); }
+  .k-select-row select {
+    font-family: inherit; font-size: 13px; padding: 5px 8px; border-radius: 6px;
+    border: 1px solid var(--line-strong); background: var(--card); color: var(--ink);
+  }
+  .status-line { font-size: 13px; color: var(--ink-soft); min-height: 18px; }
+
+  .swatch-row {
+    display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap;
+  }
+  .swatch {
+    flex: 1 1 84px; min-width: 76px; cursor: pointer; border: none; padding: 0;
+    background: none; text-align: left; font-family: inherit;
+  }
+  .swatch .chip {
+    height: 58px; border-radius: 8px; border: 1px solid rgba(0,0,0,0.08);
+    position: relative;
+  }
+  .swatch .chip .copied-flag {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; background: rgba(0,0,0,0.35); color: #fff; border-radius: 8px;
+    opacity: 0; transition: opacity .15s ease;
+  }
+  .swatch.copied .copied-flag { opacity: 1; }
+  .swatch .hex {
+    display: block; margin-top: 5px; font-family: "Space Mono", monospace; font-size: 11.5px;
+    color: var(--ink-soft);
+  }
+  .swatch .mood-tag {
+    display: block; font-size: 10.5px; color: var(--ink-soft); opacity: 0.85;
+  }
+
+  .save-form { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+  .field-row { display: flex; flex-direction: column; gap: 4px; }
+  .field-row label { font-size: 12.5px; color: var(--ink-soft); }
+  .field-row input[type="text"] {
+    font-family: inherit; font-size: 15px; padding: 9px 11px; border-radius: 8px;
+    border: 1px solid var(--line-strong); background: var(--card); color: var(--ink);
+  }
+  .form-actions { display: flex; gap: 10px; margin-top: 4px; flex-wrap: wrap; }
+
+  button.btn {
+    font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
+    padding: 10px 18px; border-radius: 8px; border: 1px solid var(--line-strong);
+    background: var(--card); color: var(--ink); transition: background-color .15s ease, border-color .15s ease;
+  }
+  button.btn:hover { background: var(--bg-soft); }
+  button.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  button.btn.primary:hover { filter: brightness(1.06); }
+  button.btn.primary:disabled { opacity: 0.45; cursor: not-allowed; filter: none; }
+  button.btn.ghost { border-color: transparent; background: transparent; padding: 10px 10px; }
+  button.btn.small { font-size: 12.5px; padding: 6px 12px; }
+  button.btn.danger-text { color: var(--danger); border-color: transparent; background: transparent; }
+
+  /* ---- library ---- */
+  .library-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .library-header h2 { margin: 0; }
+  input[type="search"] {
+    font-family: inherit; font-size: 14px; padding: 8px 12px; border-radius: 8px;
+    border: 1px solid var(--line-strong); background: var(--card); color: var(--ink);
+    min-width: 160px;
+  }
+
+  .grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 14px;
+  }
+  .palette-card {
+    border: 1px solid var(--line); border-radius: var(--radius); background: var(--card);
+    box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column;
+  }
+  .strip { display: flex; height: 46px; }
+  .strip span { flex: 1; }
+  .pc-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .pc-name { font-family: "Shippori Mincho", serif; font-weight: 700; font-size: 16px; }
+  .pc-mood { font-size: 12.5px; color: var(--ink-soft); }
+  .pc-hexes {
+    font-family: "Space Mono", monospace; font-size: 10.5px; color: var(--ink-soft);
+    word-break: break-all; line-height: 1.6;
+  }
+  .pc-actions { display: flex; gap: 8px; margin-top: 6px; }
+
+  .empty { color: var(--ink-soft); font-size: 14px; padding: 18px 4px; }
+  .skeleton { color: var(--ink-soft); font-size: 13px; padding: 8px 4px; }
+
+  #toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%) translateY(12px);
+    background: var(--ink); color: var(--bg); font-size: 13.5px; padding: 10px 18px;
+    border-radius: 999px; opacity: 0; pointer-events: none; transition: opacity .2s ease, transform .2s ease;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.25); max-width: 88vw; text-align: center;
+    z-index: 50;
+  }
+  :root[data-theme="dark"] #toast, :root:not([data-theme="light"]) #toast {
+    @media (prefers-color-scheme: dark) { background: var(--accent); color: var(--accent-ink); }
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 23px; }
+    .card { padding: 16px; }
+    .preview-top { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="wrap">
+      <h1>色見本帖</h1>
+      <p>気になった色合いを、写真から抽出して名前をつけて残す</p>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="intake">
+      <div class="card">
+        <div class="drop-zone" id="dropZone" role="button" tabindex="0">
+          <span class="dz-icon">🎨</span>
+          <span class="dz-title">画像を選ぶ</span>
+          <div class="dz-sub">タップして写真を選択（カメラロール／撮影どちらも可）</div>
+        </div>
+        <input type="file" id="fileInput" accept="image/*">
+
+        <div class="preview" id="previewArea">
+          <div class="preview-top">
+            <img class="preview-thumb" id="previewImg" alt="選択した画像のプレビュー">
+            <div class="preview-controls">
+              <div class="status-line" id="statusLine"></div>
+            </div>
+          </div>
+
+          <div class="swatch-row" id="swatchRow"></div>
+
+          <div class="save-form" id="saveForm" style="display:none;">
+            <div class="field-row">
+              <label for="nameInput">この配色の名前</label>
+              <input type="text" id="nameInput" placeholder="例：チョコミントポッキー">
+            </div>
+            <div class="field-row">
+              <label for="moodInput">雰囲気（自動生成・編集可）</label>
+              <input type="text" id="moodInput" placeholder="例：淡く優しい雰囲気">
+            </div>
+            <div class="form-actions">
+              <button class="btn primary" id="saveBtn" disabled>色見本帖に保存</button>
+              <button class="btn" id="copyCurrentBtn">コピー用テキストをコピー</button>
+              <button class="btn ghost" id="resetBtn">選び直す</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="library">
+      <div class="library-header">
+        <h2>保存した色見本</h2>
+        <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+          <input type="search" id="searchInput" placeholder="名前で検索">
+          <button class="btn small" id="exportBtn" type="button">Obsidianに書き出す</button>
+        </div>
+      </div>
+      <div class="skeleton" id="loadingLine">読み込み中…</div>
+      <p class="empty" id="emptyState" style="display:none;">まだ保存した色見本がありません。上で画像を選ぶと、色を抽出できます。</p>
+      <div class="grid" id="libraryGrid"></div>
+    </section>
+  </div>
+
+  <div id="toast"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---------- utilities: color math ----------
+  function rgbToHex(rgb) {
+    return "#" + rgb.map(function (v) {
+      return Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0");
+    }).join("");
+  }
+
+  function rgbToHsl(r, g, b) {
+    r /= 255; g /= 255; b /= 255;
+    var max = Math.max(r, g, b), min = Math.min(r, g, b);
+    var h = 0, s = 0, l = (max + min) / 2;
+    var d = max - min;
+    if (d !== 0) {
+      s = d / (1 - Math.abs(2 * l - 1));
+      switch (max) {
+        case r: h = ((g - b) / d) % 6; break;
+        case g: h = (b - r) / d + 2; break;
+        default: h = (r - g) / d + 4;
+      }
+      h *= 60;
+      if (h < 0) h += 360;
+    }
+    return { h: h, s: s, l: l };
+  }
+
+  function distSq(a, b) {
+    var dr = a[0] - b[0], dg = a[1] - b[1], db = a[2] - b[2];
+    return dr * dr + dg * dg + db * db;
+  }
+
+  function kmeansPlusPlusInit(pixels, k) {
+    var centroids = [];
+    centroids.push(pixels[Math.floor(Math.random() * pixels.length)]);
+    while (centroids.length < k) {
+      var distances = pixels.map(function (p) {
+        var min = Infinity;
+        for (var c = 0; c < centroids.length; c++) {
+          var d = distSq(p, centroids[c]);
+          if (d < min) min = d;
+        }
+        return min;
+      });
+      var sum = distances.reduce(function (a, b) { return a + b; }, 0);
+      if (sum === 0) {
+        centroids.push(pixels[Math.floor(Math.random() * pixels.length)]);
+        continue;
+      }
+      var r = Math.random() * sum;
+      var acc = 0, chosen = pixels[pixels.length - 1];
+      for (var i = 0; i < pixels.length; i++) {
+        acc += distances[i];
+        if (acc >= r) { chosen = pixels[i]; break; }
+      }
+      centroids.push(chosen);
+    }
+    return centroids.map(function (c) { return c.slice(); });
+  }
+
+  function extractPalette(imgEl, k) {
+    var maxDim = 160;
+    var w = imgEl.naturalWidth, h = imgEl.naturalHeight;
+    if (!w || !h) return [];
+    var scale = Math.min(1, maxDim / Math.max(w, h));
+    var cw = Math.max(1, Math.round(w * scale));
+    var ch = Math.max(1, Math.round(h * scale));
+    var canvas = document.createElement("canvas");
+    canvas.width = cw; canvas.height = ch;
+    var ctx = canvas.getContext("2d", { willReadFrequently: true });
+    ctx.drawImage(imgEl, 0, 0, cw, ch);
+    var data;
+    try {
+      data = ctx.getImageData(0, 0, cw, ch).data;
+    } catch (e) {
+      return [];
+    }
+    var pixels = [];
+    for (var i = 0; i < data.length; i += 4) {
+      if (data[i + 3] < 125) continue;
+      pixels.push([data[i], data[i + 1], data[i + 2]]);
+    }
+    if (pixels.length === 0) return [];
+
+    var centroids = kmeansPlusPlusInit(pixels, Math.min(k, pixels.length));
+    var assignments = new Array(pixels.length).fill(0);
+    var iterations = 9;
+    for (var iter = 0; iter < iterations; iter++) {
+      for (var p = 0; p < pixels.length; p++) {
+        var best = 0, bestDist = Infinity;
+        for (var c = 0; c < centroids.length; c++) {
+          var d2 = distSq(pixels[p], centroids[c]);
+          if (d2 < bestDist) { bestDist = d2; best = c; }
+        }
+        assignments[p] = best;
+      }
+      var sums = centroids.map(function () { return [0, 0, 0, 0]; });
+      for (var p2 = 0; p2 < pixels.length; p2++) {
+        var cc = assignments[p2];
+        sums[cc][0] += pixels[p2][0];
+        sums[cc][1] += pixels[p2][1];
+        sums[cc][2] += pixels[p2][2];
+        sums[cc][3] += 1;
+      }
+      for (var ci = 0; ci < centroids.length; ci++) {
+        if (sums[ci][3] > 0) {
+          centroids[ci] = [sums[ci][0] / sums[ci][3], sums[ci][1] / sums[ci][3], sums[ci][2] / sums[ci][3]];
+        }
+      }
+    }
+
+    var counts = new Array(centroids.length).fill(0);
+    for (var a = 0; a < assignments.length; a++) counts[assignments[a]]++;
+    var total = pixels.length;
+
+    var results = centroids.map(function (c, idx) {
+      return { rgb: c.map(function (v) { return Math.round(v); }), ratio: counts[idx] / total };
+    }).filter(function (r) { return r.ratio > 0.01; });
+
+    // merge near-duplicate clusters
+    var merged = [];
+    results.sort(function (a, b) { return b.ratio - a.ratio; });
+    results.forEach(function (r) {
+      var target = merged.find(function (m) { return distSq(m.rgb, r.rgb) < 400; });
+      if (target) {
+        var tRatio = target.ratio, rRatio = r.ratio;
+        target.rgb = [0, 1, 2].map(function (i) {
+          return (target.rgb[i] * tRatio + r.rgb[i] * rRatio) / (tRatio + rRatio);
+        });
+        target.ratio += r.ratio;
+      } else {
+        merged.push({ rgb: r.rgb.slice(), ratio: r.ratio });
+      }
+    });
+    merged.sort(function (a, b) { return b.ratio - a.ratio; });
+
+    return merged.map(function (m) {
+      var hsl = rgbToHsl(m.rgb[0], m.rgb[1], m.rgb[2]);
+      return {
+        hex: rgbToHex(m.rgb),
+        ratio: m.ratio,
+        h: hsl.h, s: hsl.s, l: hsl.l,
+        tag: colorTag(hsl)
+      };
+    });
+  }
+
+  function colorTag(hsl) {
+    if (hsl.l > 0.88) return "明るい";
+    if (hsl.l < 0.18) return "暗い";
+    if (hsl.s < 0.15) return "くすんだ";
+    if (hsl.s > 0.55) return "鮮やか";
+    return "落ち着いた";
+  }
+
+  function overallMood(colors) {
+    if (!colors.length) return "";
+    var wl = 0, ws = 0, wsum = 0;
+    colors.forEach(function (c) {
+      wl += c.l * c.ratio; ws += c.s * c.ratio; wsum += c.ratio;
+    });
+    var avgL = wl / wsum, avgS = ws / wsum;
+    if (avgL > 0.78 && avgS < 0.32) return "淡く優しい雰囲気";
+    if (avgL > 0.78 && avgS >= 0.32) return "明るく爽やかな雰囲気";
+    if (avgL <= 0.78 && avgL > 0.42 && avgS < 0.28) return "落ち着いた大人っぽい雰囲気";
+    if (avgL <= 0.78 && avgS >= 0.5) return "鮮やかで元気な雰囲気";
+    if (avgL <= 0.42) return "重厚で深みのある雰囲気";
+    return "バランスの取れた雰囲気";
+  }
+
+  function buildCopyText(name, mood, colors) {
+    var hexList = colors.map(function (c) { return c.hex; }).join(", ");
+    var label = name ? name : "この配色";
+    var moodPart = mood ? "（" + mood + "）" : "";
+    return label + "：" + hexList + moodPart;
+  }
+
+  // ---------- toast ----------
+  var toastEl = document.getElementById("toast");
+  var toastTimer = null;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 1800);
+  }
+
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () {
+        showToast("コピーしました");
+      }).catch(function () {
+        fallbackCopy(text);
+      });
+    } else {
+      fallbackCopy(text);
+    }
+  }
+  function fallbackCopy(text) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      showToast("コピーしました");
+    } catch (e) {
+      showToast("コピーできませんでした");
+    }
+  }
+
+  // ---------- intake UI ----------
+  var dropZone = document.getElementById("dropZone");
+  var fileInput = document.getElementById("fileInput");
+  var previewArea = document.getElementById("previewArea");
+  var previewImg = document.getElementById("previewImg");
+  var EXTRACT_K = 3;
+  var statusLine = document.getElementById("statusLine");
+  var swatchRow = document.getElementById("swatchRow");
+  var saveForm = document.getElementById("saveForm");
+  var nameInput = document.getElementById("nameInput");
+  var moodInput = document.getElementById("moodInput");
+  var saveBtn = document.getElementById("saveBtn");
+  var copyCurrentBtn = document.getElementById("copyCurrentBtn");
+  var resetBtn = document.getElementById("resetBtn");
+
+  var currentColors = [];
+  var currentImageLoaded = false;
+
+  dropZone.addEventListener("click", function () { fileInput.click(); });
+  dropZone.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fileInput.click(); }
+  });
+  ["dragover"].forEach(function (evt) {
+    dropZone.addEventListener(evt, function (e) { e.preventDefault(); dropZone.classList.add("drag-over"); });
+  });
+  ["dragleave", "drop"].forEach(function (evt) {
+    dropZone.addEventListener(evt, function (e) { e.preventDefault(); dropZone.classList.remove("drag-over"); });
+  });
+  dropZone.addEventListener("drop", function (e) {
+    var f = e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) handleFile(f);
+  });
+  fileInput.addEventListener("change", function () {
+    var f = fileInput.files && fileInput.files[0];
+    if (f) handleFile(f);
+  });
+
+  function handleFile(file) {
+    if (!file.type || file.type.indexOf("image/") !== 0) {
+      showToast("画像ファイルを選んでください");
+      return;
+    }
+    var reader = new FileReader();
+    reader.onload = function (e) {
+      previewImg.src = e.target.result;
+      previewArea.classList.add("active");
+      statusLine.textContent = "解析中…";
+      swatchRow.innerHTML = "";
+      saveForm.style.display = "none";
+      currentImageLoaded = false;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  previewImg.addEventListener("load", function () {
+    currentImageLoaded = true;
+    runExtraction();
+  });
+
+  function runExtraction() {
+    statusLine.textContent = "解析中…";
+    // let the UI paint before the (synchronous) extraction runs
+    setTimeout(function () {
+      var colors = extractPalette(previewImg, EXTRACT_K);
+      currentColors = colors;
+      renderSwatches(colors);
+      var mood = overallMood(colors);
+      moodInput.value = mood;
+      nameInput.value = "";
+      saveForm.style.display = colors.length ? "flex" : "none";
+      saveBtn.disabled = true;
+      statusLine.textContent = colors.length
+        ? colors.length + "色を抽出しました。名前をつけて保存できます。"
+        : "色を抽出できませんでした。別の画像でお試しください。";
+    }, 30);
+  }
+
+  function renderSwatches(colors) {
+    swatchRow.innerHTML = "";
+    colors.forEach(function (c) {
+      var btn = document.createElement("button");
+      btn.className = "swatch";
+      btn.type = "button";
+      btn.innerHTML =
+        '<span class="chip" style="background:' + c.hex + '"><span class="copied-flag">コピー済</span></span>' +
+        '<span class="hex">' + c.hex + '</span>' +
+        '<span class="mood-tag">' + c.tag + '</span>';
+      btn.addEventListener("click", function () {
+        copyText(c.hex);
+        btn.classList.add("copied");
+        setTimeout(function () { btn.classList.remove("copied"); }, 900);
+      });
+      swatchRow.appendChild(btn);
+    });
+  }
+
+  nameInput.addEventListener("input", function () {
+    saveBtn.disabled = nameInput.value.trim().length === 0;
+  });
+
+  copyCurrentBtn.addEventListener("click", function () {
+    if (!currentColors.length) return;
+    copyText(buildCopyText(nameInput.value.trim(), moodInput.value.trim(), currentColors));
+  });
+
+  resetBtn.addEventListener("click", function () {
+    previewArea.classList.remove("active");
+    swatchRow.innerHTML = "";
+    saveForm.style.display = "none";
+    currentColors = [];
+    currentImageLoaded = false;
+    fileInput.value = "";
+  });
+
+  // ---------- persistence (localStorage) ----------
+  var allPalettes = [];
+
+  var loadingLine = document.getElementById("loadingLine");
+  var emptyState = document.getElementById("emptyState");
+  var libraryGrid = document.getElementById("libraryGrid");
+  var searchInput = document.getElementById("searchInput");
+
+  // 保存キーは1つに固定する。将来データ形式を変えるときは v2 に上げて移行する
+  const STORAGE_KEY = "colorSwatchbook.palettes.v1";
+  const MAX_PALETTES = 300;
+
+  // localStorage の読み書きはここに集約する（プライベートモード等で例外が出るため try/catch 必須）
+  function loadPalettes() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return { ok: true, list: [] };
+      const parsed = JSON.parse(raw);
+      // 壊れたデータは読み込まず空で起動する（Fail Closed）
+      if (!Array.isArray(parsed)) return { ok: false, list: [] };
+      const list = parsed.map(function (data) {
+        const d = data || {};
+        return {
+          id: String(d.id || ""),
+          name: typeof d.name === "string" ? d.name : "",
+          mood: typeof d.mood === "string" ? d.mood : "",
+          colors: Array.isArray(d.colors) ? d.colors : [],
+          createdAt: Number(d.createdAt) || 0
+        };
+      });
+      list.sort(function (a, b) { return b.createdAt - a.createdAt; });
+      return { ok: true, list: list.slice(0, MAX_PALETTES) };
+    } catch (e) {
+      return { ok: false, list: [] };
+    }
+  }
+
+  function writePalettes(list) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // 保存済み一覧に1件追加する。成功したら true
+  function addPalette(payload) {
+    const current = loadPalettes();
+    // 読み込みに失敗した状態で上書きすると既存データを消すため、保存しない
+    if (!current.ok) return false;
+    const item = {
+      id: (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2),
+      name: payload.name,
+      mood: payload.mood,
+      colors: payload.colors,
+      createdAt: payload.createdAt
+    };
+    return writePalettes([item].concat(current.list).slice(0, MAX_PALETTES));
+  }
+
+  function deletePalette(id) {
+    const current = loadPalettes();
+    if (!current.ok) return false;
+    return writePalettes(current.list.filter(function (p) { return p.id !== id; }));
+  }
+
+  function initLibrary() {
+    const result = loadPalettes();
+    if (!result.ok) {
+      loadingLine.textContent = "保存データを読み込めませんでした。ブラウザの設定をご確認ください。";
+      saveBtn.disabled = true;
+      return;
+    }
+    allPalettes = result.list;
+    loadingLine.style.display = "none";
+    renderLibrary();
+  }
+
+  function refreshLibrary() {
+    allPalettes = loadPalettes().list;
+    renderLibrary();
+  }
+
+  function renderLibrary() {
+    var query = searchInput.value.trim().toLowerCase();
+    var list = allPalettes.filter(function (p) {
+      return !query || p.name.toLowerCase().indexOf(query) !== -1;
+    });
+    libraryGrid.innerHTML = "";
+    emptyState.style.display = list.length ? "none" : "block";
+    if (allPalettes.length === 0) {
+      emptyState.textContent = "まだ保存した色見本がありません。上で画像を選ぶと、色を抽出できます。";
+    } else if (list.length === 0) {
+      emptyState.textContent = "「" + searchInput.value.trim() + "」に一致する色見本はありません。";
+    }
+    list.forEach(function (p) {
+      libraryGrid.appendChild(buildPaletteCard(p));
+    });
+  }
+
+  function buildPaletteCard(p) {
+    var card = document.createElement("div");
+    card.className = "palette-card";
+
+    var strip = document.createElement("div");
+    strip.className = "strip";
+    p.colors.forEach(function (c) {
+      var span = document.createElement("span");
+      span.style.background = c.hex;
+      span.title = c.hex;
+      strip.appendChild(span);
+    });
+    card.appendChild(strip);
+
+    var body = document.createElement("div");
+    body.className = "pc-body";
+
+    var nameEl = document.createElement("div");
+    nameEl.className = "pc-name";
+    nameEl.textContent = p.name || "(名前未設定)";
+    body.appendChild(nameEl);
+
+    if (p.mood) {
+      var moodEl = document.createElement("div");
+      moodEl.className = "pc-mood";
+      moodEl.textContent = p.mood;
+      body.appendChild(moodEl);
+    }
+
+    var hexEl = document.createElement("div");
+    hexEl.className = "pc-hexes";
+    hexEl.textContent = p.colors.map(function (c) { return c.hex; }).join(" / ");
+    body.appendChild(hexEl);
+
+    var actions = document.createElement("div");
+    actions.className = "pc-actions";
+
+    var copyBtn = document.createElement("button");
+    copyBtn.className = "btn small";
+    copyBtn.type = "button";
+    copyBtn.textContent = "コピー";
+    copyBtn.addEventListener("click", function () {
+      copyText(buildCopyText(p.name, p.mood, p.colors));
+    });
+    actions.appendChild(copyBtn);
+
+    var delBtn = document.createElement("button");
+    delBtn.className = "btn small danger-text";
+    delBtn.type = "button";
+    delBtn.textContent = "削除";
+    delBtn.addEventListener("click", function () {
+      if (!confirm("「" + (p.name || "この色見本") + "」を削除しますか？")) return;
+      if (deletePalette(p.id)) {
+        refreshLibrary();
+        showToast("削除しました");
+      } else {
+        showToast("削除に失敗しました");
+      }
+    });
+    actions.appendChild(delBtn);
+
+    body.appendChild(actions);
+    card.appendChild(body);
+    return card;
+  }
+
+  searchInput.addEventListener("input", renderLibrary);
+
+  // ---------- export to Obsidian (Markdown) ----------
+  // ダウンロードは Blob + 一時リンクで行う（サーバー不要・外部通信なし）
+  function downloadTextFile(filename, text) {
+    const blob = new Blob([text], { type: "text/markdown;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    // クリック直後に解放するとiOS Safariで失敗することがあるため少し待つ
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+
+  function buildMarkdownExport(list) {
+    var lines = ["# 色見本帖 バックアップ", "", "書き出し日: " + new Date().toLocaleDateString("ja-JP"), ""];
+    list.forEach(function (p) {
+      lines.push("## " + (p.name || "(名前未設定)"));
+      lines.push("- 色: " + p.colors.map(function (c) { return c.hex; }).join(", "));
+      if (p.mood) lines.push("- 雰囲気: " + p.mood);
+      if (p.createdAt) lines.push("- 保存日: " + new Date(p.createdAt).toLocaleDateString("ja-JP"));
+      lines.push("");
+    });
+    return lines.join("\n");
+  }
+
+  document.getElementById("exportBtn").addEventListener("click", function () {
+    if (!allPalettes.length) { showToast("まだ保存した色見本がありません"); return; }
+    var sorted = allPalettes.slice().sort(function (a, b) { return a.createdAt - b.createdAt; });
+    var md = buildMarkdownExport(sorted);
+    try {
+      downloadTextFile("色見本帖.md", md);
+      showToast("書き出しました");
+    } catch (e) {
+      showToast("書き出しに失敗しました");
+    }
+  });
+
+  saveBtn.addEventListener("click", function () {
+    var name = nameInput.value.trim();
+    if (!name) return;
+    saveBtn.disabled = true;
+    var payload = {
+      name: name,
+      mood: moodInput.value.trim(),
+      colors: currentColors.map(function (c) {
+        return { hex: c.hex, ratio: Math.round(c.ratio * 1000) / 1000 };
+      }),
+      createdAt: Date.now()
+    };
+    if (addPalette(payload)) {
+      refreshLibrary();
+      showToast("色見本帖に保存しました");
+      resetBtn.click();
+    } else {
+      showToast("保存に失敗しました");
+      saveBtn.disabled = false;
+    }
+  });
+
+  initLibrary();
+})();
+</script>
+</body>
+</html>
